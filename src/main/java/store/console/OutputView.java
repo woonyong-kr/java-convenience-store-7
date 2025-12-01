@@ -1,6 +1,7 @@
 package store.console;
 
 import java.util.function.Function;
+import store.support.text.TextMapper;
 
 public class OutputView {
 
@@ -13,7 +14,7 @@ public class OutputView {
     }
 
 
-    public <T> void printLine(T value, Function<T, String> formatter) {
+    public <T> void printLine(T value, TextMapper<T, String> formatter) {
         System.out.println(formatter.apply(value));
     }
 }
