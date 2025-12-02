@@ -6,9 +6,9 @@ public class ProductTextParser implements TextParser<Product> {
     private static final String DELIMITER = ",";
     private static final String NULL_TEXT = "null";
     private static final int EXPECTED_PARTS = 4;
-    private static final String ERROR_INVALID_FORMAT = "[ERROR] 프로덕트 데이터 형식이 올바르지 않습니다: ";
-    private static final String ERROR_EMPTY_VALUE = "[ERROR] 프로덕트 데이터에 빈 값이 있습니다";
-    private static final String ERROR_INVALID_NUMBER = "[ERROR] 프로덕트 수량은 숫자여야 합니다: ";
+    private static final String ERROR_INVALID_FORMAT = "[ERROR] 프로덕트 데이터 형식 오류: ";
+    private static final String ERROR_EMPTY_VALUE = "[ERROR] 프로덕트 데이터 빈 값 존재";
+    private static final String ERROR_INVALID_NUMBER = "[ERROR] 프로덕트 수량 숫자 아님: ";
 
 
     @Override

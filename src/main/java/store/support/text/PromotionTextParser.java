@@ -7,10 +7,10 @@ import store.domain.product.Promotion;
 public class PromotionTextParser implements TextParser<Promotion> {
     private static final String DELIMITER = ",";
     private static final int EXPECTED_PARTS = 5;
-    private static final String ERROR_INVALID_FORMAT = "[ERROR] 프로모션 데이터 형식이 올바르지 않습니다: ";
-    private static final String ERROR_EMPTY_VALUE = "[ERROR] 프로모션 데이터에 빈 값이 있습니다";
-    private static final String ERROR_INVALID_NUMBER = "[ERROR] 프로모션 수량은 숫자여야 합니다: ";
-    private static final String ERROR_INVALID_DATE = "[ERROR] 프로모션 날짜 형식이 올바르지 않습니다: ";
+    private static final String ERROR_INVALID_FORMAT = "[ERROR] 프로모션 데이터 형식 오류: ";
+    private static final String ERROR_EMPTY_VALUE = "[ERROR] 프로모션 데이터 빈 값 존재";
+    private static final String ERROR_INVALID_NUMBER = "[ERROR] 프로모션 수량 숫자 아님: ";
+    private static final String ERROR_INVALID_DATE = "[ERROR] 프로모션 날짜 형식 오류: ";
 
     @Override
     public Promotion parse(String text) {

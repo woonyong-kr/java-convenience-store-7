@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import store.support.text.TextParser;
 
 public class ResourceFileLoader {
-    private static final String ERROR_RESOURCE_NOT_FOUND = "[ERROR] 리소스 파일을 찾을 수 없습니다: ";
-    private static final String ERROR_RESOURCE_READ_FAILED = "[ERROR] 리소스 파일을 읽는 중 오류가 발생했습니다: ";
+    private static final String ERROR_RESOURCE_NOT_FOUND = "[ERROR] 리소스 파일 없음: ";
+    private static final String ERROR_RESOURCE_READ_FAILED = "[ERROR] 리소스 파일 읽기 실패: ";
 
     public List<String> readLines(String resourcePath) {
         try (InputStream input = getResourceAsStream(resourcePath);
