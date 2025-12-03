@@ -1,6 +1,9 @@
 package store.state;
 
+import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import store.console.InputView;
 import store.console.OutputView;
 import store.io.ResourceFileLoader;
@@ -14,6 +17,7 @@ public class StoreContext {
     private final ResourceFileLoader resourceFileLoader;
     private final ProductService productService;
     private final PromotionService promotionService;
+    private final Map<Class<? extends StoreState>, StoreState> storeState;
     private StoreState currentState;
 
     public StoreContext(
@@ -22,13 +26,15 @@ public class StoreContext {
             ResourceFileLoader resourceFileLoader,
             ProductService productService,
             PromotionService promotionService,
-            StoreState ... storeState
+            StoreState... storeState
     ) {
         this.inputView = inputView;
         this.outputView = outputView;
         this.resourceFileLoader = resourceFileLoader;
         this.productService = productService;
         this.promotionService = promotionService;
+        this.storeState = Arrays.stream(storeState)
+                .collect(Collectors.toMap(StoreState::getClass, state -> state));
         this.currentState = storeState[0];
     }
 
@@ -44,7 +50,7 @@ public class StoreContext {
         return resourceFileLoader;
     }
 
-    public ProductService  getProductService() {
+    public ProductService getProductService() {
         return productService;
     }
 
@@ -53,7 +59,7 @@ public class StoreContext {
     }
 
     public void update() {
-        currentState = currentState.update(this);
+        currentState = storeState.get(currentState.update(this));
     }
 
     public <T> T retryUntilSuccess(Supplier<T> task) {
