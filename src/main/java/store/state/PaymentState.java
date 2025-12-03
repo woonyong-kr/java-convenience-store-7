@@ -16,24 +16,16 @@ public class PaymentState implements StoreState {
 
     @Override
     public Class<? extends StoreState> update(StoreContext context) {
-
         List<Order> orders = context.getOrderService().getCurrentOrder();
         List<Product> products = context.getProductService().getProducts();
         List<Promotion> promotions = context.getPromotionService().getPromotions();
         boolean useMembership = context.getOrderService().isUseMembership();
 
-        orders.forEach(order -> {
-            context.getProductService().sellProduct(order.getName(), order.getQuantity());
-        });
-
-        int totalPrice = context.getPaymentService().calculateTotalPrice(orders, products);
-        int promotionDiscount = context.getPaymentService().calculatePromotionDiscount(orders, products, promotions);
-        int membershipDiscount = context.getPaymentService().calculateMembershipDiscount(orders, products, promotions, useMembership);
-        int finalPrice = totalPrice - promotionDiscount - membershipDiscount;
-
         Receipt receipt = context.getPaymentService().createReceipt(orders, products, promotions, useMembership);
         context.getOutputView().printLine(receipt, receiptTextMapper);
 
+        orders.forEach(order ->
+                context.getProductService().sellProduct(order.getName(), order.getQuantity()));
 
         return AskContinueState.class;
     }

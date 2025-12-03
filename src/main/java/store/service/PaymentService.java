@@ -23,7 +23,7 @@ public class PaymentService {
                 .map(order -> {
                     Product product = findProduct(products, order.getName());
                     Promotion promotion = findPromotion(promotions, product.getPromotion());
-                    int freeCount = getFreeCount(order, promotion);
+                    int freeCount = getFreeCount(order, product, promotion);
                     return new ReceiptLine(order.getName(), freeCount, 0);
                 })
                 .filter(line -> line.getQuantity() > 0)
@@ -64,32 +64,38 @@ public class PaymentService {
     private int calculateOrderPromotionDiscount(Order order, List<Product> products, List<Promotion> promotions) {
         Product product = findProduct(products, order.getName());
         Promotion promotion = findPromotion(promotions, product.getPromotion());
-        int freeCount = getFreeCount(order, promotion);
+        int freeCount = getFreeCount(order, product, promotion);
         return product.getPrice() * freeCount;
     }
 
     private int calculateNonPromotionPrice(Order order, List<Product> products, List<Promotion> promotions) {
         Product product = findProduct(products, order.getName());
         Promotion promotion = findPromotion(promotions, product.getPromotion());
-        int nonPromotionQuantity = getNonPromotionQuantity(order, promotion);
+        int nonPromotionQuantity = getNonPromotionQuantity(order, product, promotion);
         return product.getPrice() * nonPromotionQuantity;
     }
 
-    private int getFreeCount(Order order, Promotion promotion) {
+    private int getFreeCount(Order order, Product product, Promotion promotion) {
         if (!isPromotionApplicable(promotion)) {
             return 0;
         }
         int unit = promotion.getBuy() + promotion.getGet();
-        return order.getQuantity() / unit * promotion.getGet();
+        int promotionApplicableQuantity = getPromotionApplicableQuantity(order, product, unit);
+        return promotionApplicableQuantity / unit * promotion.getGet();
     }
 
-    private int getNonPromotionQuantity(Order order, Promotion promotion) {
+    private int getNonPromotionQuantity(Order order, Product product, Promotion promotion) {
         if (!isPromotionApplicable(promotion)) {
             return order.getQuantity();
         }
         int unit = promotion.getBuy() + promotion.getGet();
-        int promotionApplied = (order.getQuantity() / unit) * unit;
-        return order.getQuantity() - promotionApplied;
+        int promotionApplicableQuantity = getPromotionApplicableQuantity(order, product, unit);
+        return order.getQuantity() - promotionApplicableQuantity;
+    }
+
+    private int getPromotionApplicableQuantity(Order order, Product product, int unit) {
+        int maxPromotionStock = (product.getPromotionStock() / unit) * unit;
+        return Math.min(order.getQuantity(), maxPromotionStock);
     }
 
     private boolean isPromotionApplicable(Promotion promotion) {

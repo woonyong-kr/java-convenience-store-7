@@ -22,9 +22,12 @@ public class CheckoutState implements StoreState {
 
     @Override
     public Class<? extends StoreState> update(StoreContext context) {
-        context.getOrderService().getCurrentOrder()
-                .forEach(order -> checkPromotion(context, order));
-        askUseMembership(context);
+        List<Order> orders = context.getOrderService().getCurrentOrder();
+        orders.forEach(order -> checkPromotion(context, order));
+
+        if (orders.stream().anyMatch(order -> order.getQuantity() != 0)) {
+            askUseMembership(context);
+        }
         return PaymentState.class;
     }
 
@@ -44,9 +47,9 @@ public class CheckoutState implements StoreState {
         if (nonPromotionQuantity > 0) {
             String message = String.format(PROMOTION_NOT_APPLICABLE, order.getName(), nonPromotionQuantity);
             context.getOutputView().printLine(message);
-            boolean purchaseWithoutPromotion = !context.retryUntilSuccess(() ->
+            boolean acceptFullPrice = context.retryUntilSuccess(() ->
                     context.getInputView().readLine(yesNoValidator, yesNoParser));
-            if (purchaseWithoutPromotion) {
+            if (!acceptFullPrice) {
                 order.reduceQuantity(nonPromotionQuantity);
             }
         }
