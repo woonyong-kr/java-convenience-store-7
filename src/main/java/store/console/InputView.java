@@ -1,9 +1,7 @@
 package store.console;
 
 import camp.nextstep.edu.missionutils.Console;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import store.support.text.TextParser;
+import store.support.text.parser.TextParser;
 import store.support.validation.Validator;
 
 public class InputView {
@@ -16,19 +14,20 @@ public class InputView {
         return Console.readLine();
     }
 
-    public String readLine(String prompt) {
-        System.out.println(prompt);
-        return readLine();
-    }
-
-    public String readLine(String prompt, Validator<String> validator) {
-        String input = readLine(prompt);
+    public String readLine(Validator<String> validator) {
+        String input = readLine();
         validator.accept(input);
         return input;
     }
 
-    public <T> T readValue(String prompt, TextParser<T> mapper) {
-        String input = readLine(prompt);
+    public <T> T readLine(TextParser<T> mapper) {
+        String input = readLine();
+        return mapper.apply(input);
+    }
+
+    public <T> T readLine(Validator<String> validator, TextParser<T> mapper) {
+        String input = readLine();
+        validator.accept(input);
         return mapper.apply(input);
     }
 }

@@ -1,7 +1,6 @@
 package store.console;
 
-import java.util.function.Function;
-import store.support.text.TextMapper;
+import store.support.text.mapper.TextMapper;
 
 public class OutputView {
 

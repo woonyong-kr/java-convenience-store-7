@@ -1,4 +1,4 @@
-package store.support.text;
+package store.support.text.mapper;
 
 import java.util.function.Function;
 

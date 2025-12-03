@@ -1,4 +1,4 @@
-package store.support.text;
+package store.support.text.parser;
 
 import java.util.function.Function;
 
