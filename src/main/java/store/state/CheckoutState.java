@@ -25,7 +25,7 @@ public class CheckoutState implements StoreState {
         context.getOrderService().getCurrentOrder()
                 .forEach(order -> checkPromotion(context, order));
         askUseMembership(context);
-        return AskContinueState.class;
+        return PaymentState.class;
     }
 
     private void checkPromotion(StoreContext context, Order order) {

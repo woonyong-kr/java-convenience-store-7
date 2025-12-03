@@ -8,6 +8,7 @@ import store.console.InputView;
 import store.console.OutputView;
 import store.io.ResourceFileLoader;
 import store.service.OrderService;
+import store.service.PaymentService;
 import store.service.ProductService;
 import store.service.PromotionService;
 
@@ -18,6 +19,7 @@ public class StoreContext {
     private final ResourceFileLoader resourceFileLoader;
     private final ProductService productService;
     private final PromotionService promotionService;
+    private final PaymentService paymentService;
     private final OrderService orderService;
     private final Map<Class<? extends StoreState>, StoreState> storeState;
     private StoreState currentState;
@@ -29,6 +31,7 @@ public class StoreContext {
             ProductService productService,
             PromotionService promotionService,
             OrderService orderService,
+            PaymentService paymentService,
             StoreState... storeState
     ) {
         this.inputView = inputView;
@@ -37,6 +40,7 @@ public class StoreContext {
         this.productService = productService;
         this.promotionService = promotionService;
         this.orderService = orderService;
+        this.paymentService = paymentService;
         this.storeState = Arrays.stream(storeState)
                 .collect(Collectors.toMap(StoreState::getClass, state -> state));
         this.currentState = storeState[0];
@@ -64,6 +68,10 @@ public class StoreContext {
 
     public OrderService getOrderService() {
         return orderService;
+    }
+
+    public PaymentService getPaymentService() {
+        return paymentService;
     }
 
     public void update() {
