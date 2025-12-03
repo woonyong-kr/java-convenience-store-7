@@ -8,6 +8,19 @@ import store.domain.product.Promotion;
 
 public class OrderService {
     private List<Order> currentOrder;
+    private boolean useMembership;
+
+    public OrderService() {
+        this.useMembership = false;
+    }
+
+    public boolean isUseMembership() {
+        return useMembership;
+    }
+
+    public void applyMembership(boolean useMembership) {
+        this.useMembership = useMembership;
+    }
 
     public void registerOrder(List<Order> order) {
         this.currentOrder = order;

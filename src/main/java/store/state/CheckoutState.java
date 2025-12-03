@@ -10,6 +10,8 @@ import store.support.validation.YesNoValidator;
 public class CheckoutState implements StoreState {
     private static final String PROMOTION_NOT_APPLICABLE = "현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)";
     private static final String FREE_ITEM_AVAILABLE = "현재 %s은(는) %d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)";
+    private static final String ASK_MEMBERSHIP = "멤버십 할인을 받으시겠습니까? (Y/N)";
+
     private final YesNoValidator yesNoValidator;
     private final YesNoParser yesNoParser;
 
@@ -20,11 +22,9 @@ public class CheckoutState implements StoreState {
 
     @Override
     public Class<? extends StoreState> update(StoreContext context) {
-
-        List<Order> orders = context.getOrderService().getCurrentOrder();
-
-        orders.forEach(order -> checkPromotion(context, order));
-
+        context.getOrderService().getCurrentOrder()
+                .forEach(order -> checkPromotion(context, order));
+        askUseMembership(context);
         return AskContinueState.class;
     }
 
@@ -42,9 +42,11 @@ public class CheckoutState implements StoreState {
                 .getNonPromotionQuantity(order, product, promotion);
 
         if (nonPromotionQuantity > 0) {
-            context.getOutputView()
-                    .printLine(String.format(PROMOTION_NOT_APPLICABLE, product.getName(), nonPromotionQuantity));
-            if (!context.getInputView().readLine(yesNoValidator, yesNoParser)) {
+            String message = String.format(PROMOTION_NOT_APPLICABLE, order.getName(), nonPromotionQuantity);
+            context.getOutputView().printLine(message);
+            boolean purchaseWithoutPromotion = !context.retryUntilSuccess(() ->
+                    context.getInputView().readLine(yesNoValidator, yesNoParser));
+            if (purchaseWithoutPromotion) {
                 order.reduceQuantity(nonPromotionQuantity);
             }
         }
@@ -55,11 +57,20 @@ public class CheckoutState implements StoreState {
                 .getFreeProductQuantity(order, product, promotion);
 
         if (freeItemQuantity > 0) {
-            context.getOutputView()
-                    .printLine(String.format(FREE_ITEM_AVAILABLE, product.getName(), freeItemQuantity));
-            if (context.getInputView().readLine(yesNoValidator, yesNoParser)) {
+            String message = String.format(FREE_ITEM_AVAILABLE, order.getName(), freeItemQuantity);
+            context.getOutputView().printLine(message);
+            boolean addFreeProduct = context.retryUntilSuccess(() ->
+                    context.getInputView().readLine(yesNoValidator, yesNoParser));
+            if (addFreeProduct) {
                 order.addQuantity(freeItemQuantity);
             }
         }
+    }
+
+    private void askUseMembership(StoreContext context) {
+        context.getOutputView().printLine(ASK_MEMBERSHIP);
+        boolean useMembership = context.retryUntilSuccess(() ->
+                context.getInputView().readLine(yesNoValidator, yesNoParser));
+        context.getOrderService().applyMembership(useMembership);
     }
 }
