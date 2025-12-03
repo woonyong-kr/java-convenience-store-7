@@ -11,7 +11,7 @@ public class OrderService {
     private boolean useMembership;
 
     public OrderService() {
-        this.useMembership = false;
+        clearOrder();
     }
 
     public boolean isUseMembership() {
@@ -32,6 +32,7 @@ public class OrderService {
 
     public void clearOrder() {
         this.currentOrder = null;
+        this.useMembership = false;
     }
 
     public int getNonPromotionQuantity(Order order, Product product, Promotion promotion) {

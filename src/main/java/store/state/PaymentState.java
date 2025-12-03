@@ -27,6 +27,8 @@ public class PaymentState implements StoreState {
         orders.forEach(order ->
                 context.getProductService().sellProduct(order.getName(), order.getQuantity()));
 
+        context.getOrderService().clearOrder();
+
         return AskContinueState.class;
     }
 }
