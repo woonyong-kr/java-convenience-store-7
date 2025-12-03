@@ -13,9 +13,6 @@ public class PromotionService {
     }
 
     public void loadPromotions() {
-        List<String> lines = resourceFileLoader.readLines(PROMOTIONS_FILE_PATH);
-        lines.stream()
-                .skip(1)
-                .forEach(line -> {});
+
     }
 }

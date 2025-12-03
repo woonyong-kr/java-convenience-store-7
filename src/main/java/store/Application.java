@@ -6,6 +6,8 @@ import store.console.OutputView;
 import store.io.ResourceFileLoader;
 import store.service.ProductService;
 import store.service.PromotionService;
+import store.state.InputPurchaseState;
+import store.state.ShowProductsState;
 import store.state.StoreContext;
 
 public class Application {
@@ -23,8 +25,10 @@ public class Application {
                 outputView,
                 resourceFileLoader,
                 productService,
-                promotionService
-                );
+                promotionService,
+                new ShowProductsState(),
+                new InputPurchaseState()
+        );
 
         StoreController controller = new StoreController(storeContext);
 

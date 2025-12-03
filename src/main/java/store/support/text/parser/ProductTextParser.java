@@ -1,9 +1,12 @@
-package store.support.text;
+package store.support.text.parser;
 
+import java.util.Arrays;
+import java.util.List;
 import store.domain.product.Product;
 
-public class ProductTextParser implements TextParser<Product> {
+public class ProductTextParser implements TextParser<List<Product>> {
     private static final String DELIMITER = ",";
+    private static final String LINE_BREAK = "\n";
     private static final String NULL_TEXT = "null";
     private static final int EXPECTED_PARTS = 4;
     private static final String ERROR_INVALID_FORMAT = "[ERROR] 프로덕트 데이터 형식 오류: ";
@@ -12,8 +15,15 @@ public class ProductTextParser implements TextParser<Product> {
 
 
     @Override
-    public Product parse(String text) {
-        String[] parts = text.split(DELIMITER);
+    public List<Product> parse(String text) {
+        return Arrays.stream(text.split(LINE_BREAK))
+                .skip(1)
+                .map(this::parseLine)
+                .toList();
+    }
+
+    private Product parseLine(String line) {
+        String[] parts = line.split(DELIMITER);
         validateCollectionLength(parts);
         validateNotEmpty(parts[0]);
         return new Product(
