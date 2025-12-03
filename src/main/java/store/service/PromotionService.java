@@ -1,18 +1,30 @@
 package store.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import store.domain.product.Product;
+import store.domain.product.Promotion;
 import store.io.ResourceFileLoader;
+import store.support.text.parser.PromotionTextParser;
 
 public class PromotionService {
     private static final String PROMOTIONS_FILE_PATH = "/promotions.md";
 
-    private ResourceFileLoader resourceFileLoader;
+    private final List<Promotion> promotions;
 
     public PromotionService(ResourceFileLoader resourceFileLoader) {
-        this.resourceFileLoader = resourceFileLoader;
+        this.promotions = resourceFileLoader.load(PROMOTIONS_FILE_PATH, new PromotionTextParser());
     }
 
-    public void loadPromotions() {
-
+    public List<Promotion> getPromotions() {
+        return Collections.unmodifiableList(promotions);
     }
+
+    public Optional<Promotion> findByName(String promotionName) {
+        return promotions.stream()
+                .filter(promotion -> promotion.getName().equals(promotionName))
+                .findFirst();
+    }
+
 }
