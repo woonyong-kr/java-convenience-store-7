@@ -35,32 +35,35 @@ public class OrderService {
     }
 
     public int getNonPromotionQuantity(Order order, Product product, Promotion promotion) {
-        if (promotion == null || !promotion.isActive()) {
-            return 0;
+        if (isPromotionApplicable(promotion)) {
+            return Math.max(0, order.getQuantity() - getMaxPromotionApplicable(product, promotion));
         }
-
-        int unit = promotion.getBuy() + promotion.getGet();
-        int promotionStock = product.getPromotionStock();
-        int maxPromotionApplicable = (promotionStock / unit) * unit;
-
-        return Math.max(0, order.getQuantity() - maxPromotionApplicable);
+        return 0;
     }
 
     public int getFreeProductQuantity(Order order, Product product, Promotion promotion) {
-        if (promotion == null || !promotion.isActive()) {
-            return 0;
-        }
-
-        int buy = promotion.getBuy();
-        int get = promotion.getGet();
-        int unit = buy + get;
-        int quantity = order.getQuantity();
-        int promotionStock = product.getPromotionStock();
-
-        int remainder = quantity % unit;
-        if (remainder == buy && promotionStock >= quantity + get) {
-            return get;
+        if (isPromotionApplicable(promotion) && canReceiveFreeProduct(order, product, promotion)) {
+            return promotion.getGet();
         }
         return 0;
+    }
+
+    private int getMaxPromotionApplicable(Product product, Promotion promotion) {
+        int unit = getPromotionUnit(promotion);
+        return (product.getPromotionStock() / unit) * unit;
+    }
+
+    private boolean canReceiveFreeProduct(Order order, Product product, Promotion promotion) {
+        int remainder = order.getQuantity() % getPromotionUnit(promotion);
+        return remainder == promotion.getBuy()
+                && product.getPromotionStock() >= order.getQuantity() + promotion.getGet();
+    }
+
+    private boolean isPromotionApplicable(Promotion promotion) {
+        return promotion != null && promotion.isActive();
+    }
+
+    private int getPromotionUnit(Promotion promotion) {
+        return promotion.getBuy() + promotion.getGet();
     }
 }

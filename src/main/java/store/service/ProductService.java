@@ -21,6 +21,18 @@ public class ProductService {
         return Collections.unmodifiableList(products);
     }
 
+    public void sellProduct(String productName, int quantity) {
+        Product product  = findByName(productName);
+
+        int promotionStock = product.getPromotionStock();
+        if (promotionStock >= quantity) {
+            product.reducePromotionStock(quantity);
+            return;
+        }
+        product.reducePromotionStock(promotionStock);
+        product.reduceNormalStock(quantity - promotionStock);
+    }
+
     public Product findByName(String productName) {
         return products.stream()
                 .filter(product -> product.getName().equals(productName))
