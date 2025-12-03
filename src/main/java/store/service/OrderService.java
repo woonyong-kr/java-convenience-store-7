@@ -1,5 +1,6 @@
 package store.service;
 
+import java.util.Collections;
 import java.util.List;
 import store.domain.order.Order;
 
@@ -11,7 +12,7 @@ public class OrderService {
     }
 
     public List<Order> getCurrentOrder() {
-        return currentOrder;
+        return Collections.unmodifiableList(currentOrder);
     }
 
     public void clearOrder() {

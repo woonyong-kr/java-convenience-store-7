@@ -14,30 +14,22 @@ public class ProductService {
     private final List<Product> products;
 
     public ProductService(ResourceFileLoader resourceFileLoader) {
-        products = resourceFileLoader
-                .load(PRODUCTS_FILE_PATH, new ProductTextParser())
-                .stream()
-                .skip(1)
-                .toList();
+        products = resourceFileLoader.load(PRODUCTS_FILE_PATH, new ProductTextParser());
     }
 
     public List<Product> getProducts() {
         return Collections.unmodifiableList(products);
     }
 
-    public  void sellProduct(String productName, int quantity) {
-        findByName(productName).reduceQuantity(quantity);
-    }
-
     public Product findByName(String productName) {
         return products.stream()
                 .filter(product -> product.getName().equals(productName))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(ERROR_PRODUCT_NOT_FOUND + productName));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_PRODUCT_NOT_FOUND));
     }
 
     public void checkOrder(String name, int quantity) {
-        if (findByName(name).getQuantity() < quantity) {
+        if (findByName(name).getTotalStock() < quantity) {
             throw new IllegalArgumentException(ERROR_STOCK_EXCEEDED);
         }
     }
