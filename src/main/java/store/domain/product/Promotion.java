@@ -9,7 +9,6 @@ public class Promotion {
     private final LocalDate startDate;
     private final LocalDate endDate;
 
-
     public Promotion(
             String name,
             int buy,
