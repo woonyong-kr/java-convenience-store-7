@@ -24,15 +24,8 @@ public class ProductService extends Service {
     }
 
     public void sellProduct(String productName, int quantity) {
-        Product product  = findByName(productName);
-
-        int promotionStock = product.getPromotionStock();
-        if (promotionStock >= quantity) {
-            product.reducePromotionStock(quantity);
-            return;
-        }
-        product.reducePromotionStock(promotionStock);
-        product.reduceNormalStock(quantity - promotionStock);
+        Product product = findByName(productName);
+        product.sell(quantity);
     }
 
     public Product findByName(String productName) {

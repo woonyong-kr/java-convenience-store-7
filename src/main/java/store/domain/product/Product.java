@@ -1,12 +1,9 @@
 package store.domain.product;
 
 public class Product {
-    private static final String ERROR_EXCEED_STOCK = "[ERROR] 재고 수량 초과: ";
-
     private final String name;
     private final int price;
-    private int normalStock;
-    private int promotionStock;
+    private final Stock stock;
     private final String promotion;
 
     public Product(
@@ -18,8 +15,7 @@ public class Product {
     ) {
         this.name = name;
         this.price = price;
-        this.normalStock = normalStock;
-        this.promotionStock = promotionStock;
+        this.stock = new Stock(normalStock, promotionStock);
         this.promotion = promotion;
     }
 
@@ -32,15 +28,15 @@ public class Product {
     }
 
     public int getNormalStock() {
-        return normalStock;
+        return stock.getNormalQuantity();
     }
 
     public int getPromotionStock() {
-        return promotionStock;
+        return stock.getPromotionQuantity();
     }
 
     public int getTotalStock() {
-        return normalStock + promotionStock;
+        return stock.getTotalQuantity();
     }
 
     public String getPromotion() {
@@ -52,24 +48,14 @@ public class Product {
     }
 
     public void addNormalStock(int amount) {
-        this.normalStock += amount;
+        stock.addNormal(amount);
     }
 
     public void addPromotionStock(int amount) {
-        this.promotionStock += amount;
+        stock.addPromotion(amount);
     }
 
-    public void reducePromotionStock(int amount) {
-        if (this.promotionStock < amount) {
-            throw new IllegalArgumentException(ERROR_EXCEED_STOCK + amount);
-        }
-        this.promotionStock -= amount;
-    }
-
-    public void reduceNormalStock(int amount) {
-        if (this.normalStock < amount) {
-            throw new IllegalArgumentException(ERROR_EXCEED_STOCK + amount);
-        }
-        this.normalStock -= amount;
+    public void sell(int quantity) {
+        stock.reduce(quantity);
     }
 }

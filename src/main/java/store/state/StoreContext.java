@@ -24,7 +24,7 @@ public class StoreContext implements StateContext {
     public <T extends Service> T getService(Class<T> type) {
         Service service = services.get(type);
         if (service == null) {
-            throw new IllegalArgumentException(ERROR_SERVICE_NOT_FOUND + type.getName());
+            throw new IllegalStateException(ERROR_SERVICE_NOT_FOUND + type.getName());
         }
         return (T) service;
     }
