@@ -1,6 +1,6 @@
 package store.state;
 
-import store.support.text.mapper.ProductTextMapper;
+import store.convert.mapper.ProductTextMapper;
 
 public class ShowProductsState implements StoreState {
     private static final String WELCOME_MESSAGE = "안녕하세요. W편의점입니다.";

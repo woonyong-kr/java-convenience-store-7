@@ -1,8 +1,8 @@
 package store.console;
 
 import camp.nextstep.edu.missionutils.Console;
-import store.support.text.parser.TextParser;
-import store.support.validation.Validator;
+import store.convert.parser.TextParser;
+import store.support.convert.Validator;
 
 public class InputView {
 

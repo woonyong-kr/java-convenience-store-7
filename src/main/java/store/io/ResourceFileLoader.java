@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
-import store.support.text.parser.TextParser;
+import store.convert.parser.TextParser;
 
 public class ResourceFileLoader implements FileLoader<String> {
     private static final String ERROR_RESOURCE_NOT_FOUND = "[ERROR] 리소스 파일 없음: ";

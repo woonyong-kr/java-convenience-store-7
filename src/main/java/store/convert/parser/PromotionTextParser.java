@@ -1,8 +1,7 @@
-package store.support.text.parser;
+package store.convert.parser;
 
 import java.util.Arrays;
 import java.util.List;
-import store.domain.product.Product;
 import store.domain.product.Promotion;
 
 public class PromotionTextParser extends TextParser<List<Promotion>> {

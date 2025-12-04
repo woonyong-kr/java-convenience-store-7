@@ -1,6 +1,6 @@
 package store.console;
 
-import store.support.text.mapper.TextMapper;
+import store.convert.mapper.TextMapper;
 
 public class OutputView {
 

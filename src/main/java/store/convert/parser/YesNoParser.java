@@ -1,4 +1,4 @@
-package store.support.text.parser;
+package store.convert.parser;
 
 public class YesNoParser extends TextParser<Boolean> {
     private static final String YES = "Y";

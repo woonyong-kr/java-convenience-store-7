@@ -1,4 +1,4 @@
-package store.support.text.parser;
+package store.convert.parser;
 
 import java.util.Arrays;
 import java.util.List;

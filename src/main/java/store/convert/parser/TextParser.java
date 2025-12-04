@@ -1,4 +1,4 @@
-package store.support.text.parser;
+package store.convert.parser;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;

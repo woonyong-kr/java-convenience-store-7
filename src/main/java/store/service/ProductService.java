@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import store.domain.product.Product;
 import store.io.ResourceFileLoader;
-import store.support.text.parser.ProductTextParser;
+import store.convert.parser.ProductTextParser;
 
 public class ProductService {
     private static final String PRODUCTS_FILE_PATH = "/products.md";

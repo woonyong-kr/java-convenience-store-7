@@ -5,7 +5,7 @@ import store.domain.order.Order;
 import store.domain.payment.Receipt;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
-import store.support.text.mapper.ReceiptTextMapper;
+import store.convert.mapper.ReceiptTextMapper;
 
 public class PaymentState implements StoreState {
     private final ReceiptTextMapper  receiptTextMapper;

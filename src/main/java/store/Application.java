@@ -14,9 +14,12 @@ import store.state.InputPurchaseState;
 import store.state.PaymentState;
 import store.state.ShowProductsState;
 import store.state.StoreContext;
+import store.support.state.runtime.StateRunner;
 
 public class Application {
     public static void main(String[] args) {
+
+        StateRunner.run("store.statetest");
 
         InputView inputView = new InputView();
         OutputView outputView = new OutputView();

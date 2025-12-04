@@ -1,7 +1,7 @@
 package store.state;
 
-import store.support.text.parser.YesNoParser;
-import store.support.validation.YesNoValidator;
+import store.convert.parser.YesNoParser;
+import store.validation.YesNoValidator;
 
 public class AskContinueState implements StoreState {
     private static final String ASK_CONTINUE_MESSAGE = "감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)";

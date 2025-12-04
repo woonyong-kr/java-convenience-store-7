@@ -3,10 +3,9 @@ package store.service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import store.domain.product.Product;
 import store.domain.product.Promotion;
 import store.io.ResourceFileLoader;
-import store.support.text.parser.PromotionTextParser;
+import store.convert.parser.PromotionTextParser;
 
 public class PromotionService {
     private static final String PROMOTIONS_FILE_PATH = "/promotions.md";

@@ -2,8 +2,8 @@ package store.state;
 
 import java.util.List;
 import store.domain.order.Order;
-import store.support.text.parser.InputPurchaseParser;
-import store.support.validation.InputPurchaseValidator;
+import store.convert.parser.InputPurchaseParser;
+import store.validation.InputPurchaseValidator;
 
 public class InputPurchaseState implements StoreState {
     private static final String INPUT_PURCHASE_MESSAGE = "구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])";

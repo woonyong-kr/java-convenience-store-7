@@ -4,8 +4,8 @@ import java.util.List;
 import store.domain.order.Order;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
-import store.support.text.parser.YesNoParser;
-import store.support.validation.YesNoValidator;
+import store.convert.parser.YesNoParser;
+import store.validation.YesNoValidator;
 
 public class CheckoutState implements StoreState {
     private static final String PROMOTION_NOT_APPLICABLE = "현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)";
