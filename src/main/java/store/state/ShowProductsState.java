@@ -18,16 +18,18 @@ public class ShowProductsState {
         this.productTextMapper = new ProductTextMapper();
     }
 
-    @Action
-    public void showProducts(StoreContext context) {
+    @Action(order = 1)
+    public void greet(StoreContext context) {
         Output.printLine(WELCOME_MESSAGE);
         Output.printLine(PRODUCT_LIST_MESSAGE);
         Output.printLine();
+    }
 
+    @Action(order = 2)
+    public void displayProducts(StoreContext context) {
         context.getService(ProductService.class).getProducts()
                 .forEach(product -> Output.printLine(product, productTextMapper));
         Output.printLine();
-
         context.transitionTo(InputPurchaseState.class);
     }
 }

@@ -17,6 +17,7 @@ public class Receipt {
 
     public List<ReceiptLine> getLines() {
         return results.stream()
+                .filter(result -> result.getQuantity() > 0)
                 .map(result -> new ReceiptLine(result.getProductName(), result.getQuantity(), result.getTotalPrice()))
                 .toList();
     }

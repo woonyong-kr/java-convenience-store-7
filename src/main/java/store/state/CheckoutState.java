@@ -31,65 +31,75 @@ public class CheckoutState {
     }
 
     @Action(order = 1)
-    public void checkPromotions(StoreContext context) {
+    public void askNonPromotionPurchases(StoreContext context) {
         List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
-        orders.forEach(order -> checkPromotion(context, order));
+        orders.forEach(order -> askNonPromotionPurchase(context, order));
     }
 
     @Action(order = 2)
+    public void askFreeProducts(StoreContext context) {
+        List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
+        orders.forEach(order -> askFreeProduct(context, order));
+    }
+
+    @Action(order = 3)
     public void askMembership(StoreContext context) {
         List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
-        if (orders.stream().anyMatch(order -> order.getQuantity() != 0)) {
+        if (hasValidOrders(orders)) {
             Output.printLine(ASK_MEMBERSHIP);
             boolean useMembership = context.retryUntilSuccess(() ->
                     Input.readLine(yesNoValidator, yesNoParser));
             context.getService(OrderService.class).applyMembership(useMembership);
         }
-    }
-
-    @Action(order = 3)
-    public void goToPayment(StoreContext context) {
         context.transitionTo(PaymentState.class);
     }
 
-    private void checkPromotion(StoreContext context, Order order) {
+    private boolean hasValidOrders(List<Order> orders) {
+        return orders.stream().anyMatch(order -> order.getQuantity() > 0);
+    }
+
+    private PromotionPolicy getPromotionPolicy(StoreContext context, Order order) {
         Product product = context.getService(ProductService.class).findByName(order.getName());
         Promotion promotion = context.getService(PromotionService.class)
                 .findByName(product.getPromotion()).orElse(null);
-        PromotionPolicy policy = product.createPromotionPolicy(promotion);
-
-        askNonPromotionPurchase(context, order, policy);
-        askFreeProduct(context, order, policy);
+        return product.createPromotionPolicy(promotion);
     }
 
-    private void askNonPromotionPurchase(StoreContext context, Order order, PromotionPolicy policy) {
+    private void askNonPromotionPurchase(StoreContext context, Order order) {
+        PromotionPolicy policy = getPromotionPolicy(context, order);
         if (!policy.isActive()) {
             return;
         }
-        int nonPromotionQuantity = policy.getNonPromotionQuantity(order.getQuantity());
 
-        if (nonPromotionQuantity > 0) {
-            String message = String.format(PROMOTION_NOT_APPLICABLE, order.getName(), nonPromotionQuantity);
-            Output.printLine(message);
-            boolean acceptFullPrice = context.retryUntilSuccess(() ->
-                    Input.readLine(yesNoValidator, yesNoParser));
-            if (!acceptFullPrice) {
-                order.reduceQuantity(nonPromotionQuantity);
-            }
+        int nonPromotionQuantity = policy.getNonPromotionQuantity(order.getQuantity());
+        if (nonPromotionQuantity <= 0) {
+            return;
+        }
+
+        String message = String.format(PROMOTION_NOT_APPLICABLE, order.getName(), nonPromotionQuantity);
+        Output.printLine(message);
+        boolean acceptFullPrice = context.retryUntilSuccess(() ->
+                Input.readLine(yesNoValidator, yesNoParser));
+
+        if (!acceptFullPrice) {
+            order.reduceQuantity(nonPromotionQuantity);
         }
     }
 
-    private void askFreeProduct(StoreContext context, Order order, PromotionPolicy policy) {
+    private void askFreeProduct(StoreContext context, Order order) {
+        PromotionPolicy policy = getPromotionPolicy(context, order);
         int freeItemQuantity = policy.getAdditionalFreeQuantity(order.getQuantity());
+        if (freeItemQuantity <= 0) {
+            return;
+        }
 
-        if (freeItemQuantity > 0) {
-            String message = String.format(FREE_ITEM_AVAILABLE, order.getName(), freeItemQuantity);
-            Output.printLine(message);
-            boolean addFreeProduct = context.retryUntilSuccess(() ->
-                    Input.readLine(yesNoValidator, yesNoParser));
-            if (addFreeProduct) {
-                order.addQuantity(freeItemQuantity);
-            }
+        String message = String.format(FREE_ITEM_AVAILABLE, order.getName(), freeItemQuantity);
+        Output.printLine(message);
+        boolean addFreeProduct = context.retryUntilSuccess(() ->
+                Input.readLine(yesNoValidator, yesNoParser));
+
+        if (addFreeProduct) {
+            order.addQuantity(freeItemQuantity);
         }
     }
 }

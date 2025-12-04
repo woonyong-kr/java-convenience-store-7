@@ -14,20 +14,27 @@ public class AskContinueState {
 
     private final YesNoValidator yesNoValidator;
     private final YesNoParser yesNoParser;
+    private boolean continuesShopping;
 
     public AskContinueState() {
         this.yesNoValidator = new YesNoValidator();
         this.yesNoParser = new YesNoParser();
     }
 
-    @Action
-    public void askContinue(StoreContext context) {
+    @Action(order = 1)
+    public void showPrompt(StoreContext context) {
         Output.printLine(ASK_CONTINUE_MESSAGE);
+    }
 
-        boolean continues = context.retryUntilSuccess(() ->
+    @Action(order = 2)
+    public void readUserInput(StoreContext context) {
+        this.continuesShopping = context.retryUntilSuccess(() ->
                 Input.readLine(yesNoValidator, yesNoParser));
+    }
 
-        if (continues) {
+    @Action(order = 3)
+    public void handleUserChoice(StoreContext context) {
+        if (continuesShopping) {
             context.transitionTo(ShowProductsState.class);
             return;
         }

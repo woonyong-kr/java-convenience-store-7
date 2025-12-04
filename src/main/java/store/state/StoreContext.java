@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 import store.support.io.Output;
 import store.support.service.Service;
 import store.support.state.runtime.StateContext;
+import store.support.state.annotation.ContextConfiguration;
 
+@ContextConfiguration
 public class StoreContext implements StateContext {
     private static final String ERROR_SERVICE_NOT_FOUND = "[ERROR] 등록되지 않은 서비스입니다: ";
 
