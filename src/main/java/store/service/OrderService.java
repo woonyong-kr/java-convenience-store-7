@@ -3,9 +3,6 @@ package store.service;
 import java.util.Collections;
 import java.util.List;
 import store.domain.order.Order;
-import store.domain.product.Product;
-import store.domain.product.Promotion;
-import store.domain.product.PromotionPolicy;
 import store.support.service.Service;
 
 public class OrderService extends Service {
@@ -35,18 +32,5 @@ public class OrderService extends Service {
     public void clearOrder() {
         this.currentOrder = null;
         this.useMembership = false;
-    }
-
-    public int getNonPromotionQuantity(Order order, Product product, Promotion promotion) {
-        PromotionPolicy policy = product.createPromotionPolicy(promotion);
-        if (!policy.isActive()) {
-            return 0;
-        }
-        return policy.getNonPromotionQuantity(order.getQuantity());
-    }
-
-    public int getFreeProductQuantity(Order order, Product product, Promotion promotion) {
-        PromotionPolicy policy = product.createPromotionPolicy(promotion);
-        return policy.getAdditionalFreeQuantity(order.getQuantity());
     }
 }

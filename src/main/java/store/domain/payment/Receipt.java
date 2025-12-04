@@ -1,56 +1,57 @@
 package store.domain.payment;
 
 import java.util.List;
+import store.domain.order.PurchaseResult;
 
 public class Receipt {
-    private final List<ReceiptLine> receiptLines;
-    private final List<ReceiptLine> freeReceiptLines;
-    private final int totalQuantity;
-    private final int totalPrice;
-    private final int promotionDiscount;
-    private final int membershipDiscount;
+    private static final double MEMBERSHIP_DISCOUNT_RATE = 0.3;
+    private static final int MEMBERSHIP_DISCOUNT_LIMIT = 8000;
 
-    public Receipt(
-            List<ReceiptLine> receiptLines,
-            List<ReceiptLine> freeFeceiptLines,
-            int totalQuantity,
-            int totalPrice,
-            int promotionDiscount,
-            int membershipDiscount
-    ) {
-        this.receiptLines = receiptLines;
-        this.freeReceiptLines = freeFeceiptLines;
-        this.totalQuantity = totalQuantity;
-        this.totalPrice = totalPrice;
-        this.promotionDiscount = promotionDiscount;
-        this.membershipDiscount = membershipDiscount;
+    private final List<PurchaseResult> results;
+    private final boolean useMembership;
+
+    public Receipt(List<PurchaseResult> results, boolean useMembership) {
+        this.results = results;
+        this.useMembership = useMembership;
     }
 
     public List<ReceiptLine> getLines() {
-        return receiptLines;
+        return results.stream()
+                .map(result -> new ReceiptLine(result.getProductName(), result.getQuantity(), result.getTotalPrice()))
+                .toList();
     }
 
     public List<ReceiptLine> getFreeLines() {
-        return freeReceiptLines;
+        return results.stream()
+                .filter(result -> result.getFreeQuantity() > 0)
+                .map(result -> new ReceiptLine(result.getProductName(), result.getFreeQuantity(), 0))
+                .toList();
     }
 
     public int getTotalQuantity() {
-        return totalQuantity;
+        return results.stream().mapToInt(PurchaseResult::getQuantity).sum();
     }
 
     public int getTotalPrice() {
-        return totalPrice;
+        return results.stream().mapToInt(PurchaseResult::getTotalPrice).sum();
     }
 
     public int getPromotionDiscount() {
-        return promotionDiscount;
+        return results.stream().mapToInt(PurchaseResult::getPromotionDiscount).sum();
     }
 
     public int getMembershipDiscount() {
-        return membershipDiscount;
+        if (!useMembership) {
+            return 0;
+        }
+        int nonPromotionTotal = results.stream()
+                .mapToInt(PurchaseResult::getNonPromotionPrice)
+                .sum();
+        int discount = (int) (nonPromotionTotal * MEMBERSHIP_DISCOUNT_RATE);
+        return Math.min(discount, MEMBERSHIP_DISCOUNT_LIMIT);
     }
 
     public int getFinalPrice() {
-        return totalPrice - promotionDiscount - membershipDiscount;
+        return getTotalPrice() - getPromotionDiscount() - getMembershipDiscount();
     }
 }

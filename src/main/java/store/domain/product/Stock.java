@@ -35,12 +35,4 @@ public class Stock {
         promotionQuantity -= fromPromotion;
         normalQuantity -= (quantity - fromPromotion);
     }
-
-    public void addNormal(int quantity) {
-        this.normalQuantity += quantity;
-    }
-
-    public void addPromotion(int quantity) {
-        this.promotionQuantity += quantity;
-    }
 }

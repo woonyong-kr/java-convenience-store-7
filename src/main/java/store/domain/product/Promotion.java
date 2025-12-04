@@ -35,15 +35,7 @@ public class Promotion {
         return get;
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public boolean isActive(LocalDate  date) {
+    public boolean isActive(LocalDate date) {
         return !date.isBefore(startDate) && !date.isAfter(endDate);
     }
 

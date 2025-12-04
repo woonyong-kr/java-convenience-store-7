@@ -5,6 +5,7 @@ import store.convert.parser.YesNoParser;
 import store.domain.order.Order;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
+import store.domain.product.PromotionPolicy;
 import store.service.OrderService;
 import store.service.ProductService;
 import store.service.PromotionService;
@@ -55,14 +56,17 @@ public class CheckoutState {
         Product product = context.getService(ProductService.class).findByName(order.getName());
         Promotion promotion = context.getService(PromotionService.class)
                 .findByName(product.getPromotion()).orElse(null);
+        PromotionPolicy policy = product.createPromotionPolicy(promotion);
 
-        askNonPromotionPurchase(context, order, product, promotion);
-        askFreeProduct(context, order, product, promotion);
+        askNonPromotionPurchase(context, order, policy);
+        askFreeProduct(context, order, policy);
     }
 
-    private void askNonPromotionPurchase(StoreContext context, Order order, Product product, Promotion promotion) {
-        int nonPromotionQuantity = context.getService(OrderService.class)
-                .getNonPromotionQuantity(order, product, promotion);
+    private void askNonPromotionPurchase(StoreContext context, Order order, PromotionPolicy policy) {
+        if (!policy.isActive()) {
+            return;
+        }
+        int nonPromotionQuantity = policy.getNonPromotionQuantity(order.getQuantity());
 
         if (nonPromotionQuantity > 0) {
             String message = String.format(PROMOTION_NOT_APPLICABLE, order.getName(), nonPromotionQuantity);
@@ -75,9 +79,8 @@ public class CheckoutState {
         }
     }
 
-    private void askFreeProduct(StoreContext context, Order order, Product product, Promotion promotion) {
-        int freeItemQuantity = context.getService(OrderService.class)
-                .getFreeProductQuantity(order, product, promotion);
+    private void askFreeProduct(StoreContext context, Order order, PromotionPolicy policy) {
+        int freeItemQuantity = policy.getAdditionalFreeQuantity(order.getQuantity());
 
         if (freeItemQuantity > 0) {
             String message = String.format(FREE_ITEM_AVAILABLE, order.getName(), freeItemQuantity);

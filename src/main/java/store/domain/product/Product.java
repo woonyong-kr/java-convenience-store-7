@@ -47,16 +47,14 @@ public class Product {
         return promotion != null && !promotion.isBlank();
     }
 
-    public void addNormalStock(int amount) {
-        stock.addNormal(amount);
-    }
-
-    public void addPromotionStock(int amount) {
-        stock.addPromotion(amount);
-    }
-
     public void sell(int quantity) {
         stock.reduce(quantity);
+    }
+
+    public void checkStock(int quantity) {
+        if (!stock.hasEnough(quantity)) {
+            stock.reduce(quantity);
+        }
     }
 
     public PromotionPolicy createPromotionPolicy(Promotion promotion) {
