@@ -1,13 +1,16 @@
 package store.state;
 
 import java.util.List;
+import store.convert.parser.YesNoParser;
 import store.domain.order.Order;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
-import store.convert.parser.YesNoParser;
+import store.support.io.Input;
+import store.support.io.Output;
 import store.validation.YesNoValidator;
 
 public class CheckoutState implements StoreState {
+
     private static final String PROMOTION_NOT_APPLICABLE = "현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)";
     private static final String FREE_ITEM_AVAILABLE = "현재 %s은(는) %d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)";
     private static final String ASK_MEMBERSHIP = "멤버십 할인을 받으시겠습니까? (Y/N)";
@@ -46,9 +49,9 @@ public class CheckoutState implements StoreState {
 
         if (nonPromotionQuantity > 0) {
             String message = String.format(PROMOTION_NOT_APPLICABLE, order.getName(), nonPromotionQuantity);
-            context.getOutputView().printLine(message);
+            Output.printLine(message);
             boolean acceptFullPrice = context.retryUntilSuccess(() ->
-                    context.getInputView().readLine(yesNoValidator, yesNoParser));
+                    Input.readLine(yesNoValidator, yesNoParser));
             if (!acceptFullPrice) {
                 order.reduceQuantity(nonPromotionQuantity);
             }
@@ -61,9 +64,9 @@ public class CheckoutState implements StoreState {
 
         if (freeItemQuantity > 0) {
             String message = String.format(FREE_ITEM_AVAILABLE, order.getName(), freeItemQuantity);
-            context.getOutputView().printLine(message);
+            Output.printLine(message);
             boolean addFreeProduct = context.retryUntilSuccess(() ->
-                    context.getInputView().readLine(yesNoValidator, yesNoParser));
+                    Input.readLine(yesNoValidator, yesNoParser));
             if (addFreeProduct) {
                 order.addQuantity(freeItemQuantity);
             }
@@ -71,9 +74,9 @@ public class CheckoutState implements StoreState {
     }
 
     private void askUseMembership(StoreContext context) {
-        context.getOutputView().printLine(ASK_MEMBERSHIP);
+        Output.printLine(ASK_MEMBERSHIP);
         boolean useMembership = context.retryUntilSuccess(() ->
-                context.getInputView().readLine(yesNoValidator, yesNoParser));
+                Input.readLine(yesNoValidator, yesNoParser));
         context.getOrderService().applyMembership(useMembership);
     }
 }

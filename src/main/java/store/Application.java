@@ -1,7 +1,5 @@
 package store;
 
-import store.console.InputView;
-import store.console.OutputView;
 import store.controller.StoreController;
 import store.service.OrderService;
 import store.service.PaymentService;
@@ -17,17 +15,12 @@ import store.state.StoreContext;
 public class Application {
 
     public static void main(String[] args) {
-        InputView inputView = new InputView();
-        OutputView outputView = new OutputView();
-
         ProductService productService = new ProductService();
         PromotionService promotionService = new PromotionService();
         OrderService orderService = new OrderService();
         PaymentService paymentService = new PaymentService();
 
         StoreContext storeContext = new StoreContext(
-                inputView,
-                outputView,
                 productService,
                 promotionService,
                 orderService,

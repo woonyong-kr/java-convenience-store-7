@@ -4,17 +4,14 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import store.console.InputView;
-import store.console.OutputView;
 import store.service.OrderService;
 import store.service.PaymentService;
 import store.service.ProductService;
 import store.service.PromotionService;
+import store.support.io.Output;
 
 public class StoreContext {
 
-    private final InputView inputView;
-    private final OutputView outputView;
     private final ProductService productService;
     private final PromotionService promotionService;
     private final PaymentService paymentService;
@@ -23,16 +20,12 @@ public class StoreContext {
     private StoreState currentState;
 
     public StoreContext(
-            InputView inputView,
-            OutputView outputView,
             ProductService productService,
             PromotionService promotionService,
             OrderService orderService,
             PaymentService paymentService,
             StoreState... storeState
     ) {
-        this.inputView = inputView;
-        this.outputView = outputView;
         this.productService = productService;
         this.promotionService = promotionService;
         this.orderService = orderService;
@@ -40,14 +33,6 @@ public class StoreContext {
         this.storeState = Arrays.stream(storeState)
                 .collect(Collectors.toMap(StoreState::getClass, state -> state));
         this.currentState = storeState[0];
-    }
-
-    public InputView getInputView() {
-        return inputView;
-    }
-
-    public OutputView getOutputView() {
-        return outputView;
     }
 
     public ProductService getProductService() {
@@ -75,7 +60,7 @@ public class StoreContext {
             try {
                 return task.get();
             } catch (IllegalArgumentException e) {
-                outputView.printLine(e.getMessage());
+                Output.printLine(e.getMessage());
             }
         }
     }

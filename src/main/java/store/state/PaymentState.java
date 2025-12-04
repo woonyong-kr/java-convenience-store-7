@@ -1,14 +1,16 @@
 package store.state;
 
 import java.util.List;
+import store.convert.mapper.ReceiptTextMapper;
 import store.domain.order.Order;
 import store.domain.payment.Receipt;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
-import store.convert.mapper.ReceiptTextMapper;
+import store.support.io.Output;
 
 public class PaymentState implements StoreState {
-    private final ReceiptTextMapper  receiptTextMapper;
+
+    private final ReceiptTextMapper receiptTextMapper;
 
     public PaymentState() {
         this.receiptTextMapper = new ReceiptTextMapper();
@@ -22,13 +24,12 @@ public class PaymentState implements StoreState {
         boolean useMembership = context.getOrderService().isUseMembership();
 
         Receipt receipt = context.getPaymentService().createReceipt(orders, products, promotions, useMembership);
-        context.getOutputView().printLine(receipt, receiptTextMapper);
+        Output.printLine(receipt, receiptTextMapper);
 
         orders.forEach(order ->
                 context.getProductService().sellProduct(order.getName(), order.getQuantity()));
 
         context.getOrderService().clearOrder();
-
         return AskContinueState.class;
     }
 }
