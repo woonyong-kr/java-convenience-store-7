@@ -58,4 +58,11 @@ public class Product {
     public void sell(int quantity) {
         stock.reduce(quantity);
     }
+
+    public PromotionPolicy createPromotionPolicy(Promotion promotion) {
+        if (promotion == null || !hasPromotion()) {
+            return PromotionPolicy.none();
+        }
+        return PromotionPolicy.of(promotion, getPromotionStock());
+    }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import store.domain.order.Order;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
+import store.domain.product.PromotionPolicy;
 import store.support.service.Service;
 
 public class OrderService extends Service {
@@ -37,35 +38,12 @@ public class OrderService extends Service {
     }
 
     public int getNonPromotionQuantity(Order order, Product product, Promotion promotion) {
-        if (isPromotionApplicable(promotion)) {
-            return Math.max(0, order.getQuantity() - getMaxPromotionApplicable(product, promotion));
-        }
-        return 0;
+        PromotionPolicy policy = product.createPromotionPolicy(promotion);
+        return policy.getNonPromotionQuantity(order.getQuantity());
     }
 
     public int getFreeProductQuantity(Order order, Product product, Promotion promotion) {
-        if (isPromotionApplicable(promotion) && canReceiveFreeProduct(order, product, promotion)) {
-            return promotion.getGet();
-        }
-        return 0;
-    }
-
-    private int getMaxPromotionApplicable(Product product, Promotion promotion) {
-        int unit = getPromotionUnit(promotion);
-        return (product.getPromotionStock() / unit) * unit;
-    }
-
-    private boolean canReceiveFreeProduct(Order order, Product product, Promotion promotion) {
-        int remainder = order.getQuantity() % getPromotionUnit(promotion);
-        return remainder == promotion.getBuy()
-                && product.getPromotionStock() >= order.getQuantity() + promotion.getGet();
-    }
-
-    private boolean isPromotionApplicable(Promotion promotion) {
-        return promotion != null && promotion.isActive();
-    }
-
-    private int getPromotionUnit(Promotion promotion) {
-        return promotion.getBuy() + promotion.getGet();
+        PromotionPolicy policy = product.createPromotionPolicy(promotion);
+        return policy.getAdditionalFreeQuantity(order.getQuantity());
     }
 }

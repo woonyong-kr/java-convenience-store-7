@@ -6,6 +6,7 @@ import store.domain.payment.Receipt;
 import store.domain.payment.ReceiptLine;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
+import store.domain.product.PromotionPolicy;
 import store.support.service.Service;
 
 public class PaymentService extends Service {
@@ -77,30 +78,13 @@ public class PaymentService extends Service {
     }
 
     private int getFreeCount(Order order, Product product, Promotion promotion) {
-        if (!isPromotionApplicable(promotion)) {
-            return 0;
-        }
-        int unit = promotion.getBuy() + promotion.getGet();
-        int promotionApplicableQuantity = getPromotionApplicableQuantity(order, product, unit);
-        return promotionApplicableQuantity / unit * promotion.getGet();
+        PromotionPolicy policy = product.createPromotionPolicy(promotion);
+        return policy.getTotalFreeQuantity(order.getQuantity());
     }
 
     private int getNonPromotionQuantity(Order order, Product product, Promotion promotion) {
-        if (!isPromotionApplicable(promotion)) {
-            return order.getQuantity();
-        }
-        int unit = promotion.getBuy() + promotion.getGet();
-        int promotionApplicableQuantity = getPromotionApplicableQuantity(order, product, unit);
-        return order.getQuantity() - promotionApplicableQuantity;
-    }
-
-    private int getPromotionApplicableQuantity(Order order, Product product, int unit) {
-        int maxPromotionStock = (product.getPromotionStock() / unit) * unit;
-        return Math.min(order.getQuantity(), maxPromotionStock);
-    }
-
-    private boolean isPromotionApplicable(Promotion promotion) {
-        return promotion != null && promotion.isActive();
+        PromotionPolicy policy = product.createPromotionPolicy(promotion);
+        return policy.getNonPromotionQuantity(order.getQuantity());
     }
 
     private Product findProduct(List<Product> products, String name) {
