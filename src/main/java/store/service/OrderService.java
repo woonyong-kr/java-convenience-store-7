@@ -39,6 +39,9 @@ public class OrderService extends Service {
 
     public int getNonPromotionQuantity(Order order, Product product, Promotion promotion) {
         PromotionPolicy policy = product.createPromotionPolicy(promotion);
+        if (!policy.isActive()) {
+            return 0;
+        }
         return policy.getNonPromotionQuantity(order.getQuantity());
     }
 

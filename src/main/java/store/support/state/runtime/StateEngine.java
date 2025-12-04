@@ -2,6 +2,7 @@ package store.support.state.runtime;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -135,6 +136,12 @@ public class StateEngine {
         try {
             method.setAccessible(true);
             invokeWithParameters(method);
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            }
+            throw new IllegalStateException(ERROR_INVOKE + method.getName(), e);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException(ERROR_INVOKE + method.getName(), e);
         }
