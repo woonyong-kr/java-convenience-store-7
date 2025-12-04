@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import store.console.InputView;
 import store.console.OutputView;
-import store.io.ResourceFileLoader;
 import store.service.OrderService;
 import store.service.PaymentService;
 import store.service.ProductService;
@@ -16,7 +15,6 @@ public class StoreContext {
 
     private final InputView inputView;
     private final OutputView outputView;
-    private final ResourceFileLoader resourceFileLoader;
     private final ProductService productService;
     private final PromotionService promotionService;
     private final PaymentService paymentService;
@@ -27,7 +25,6 @@ public class StoreContext {
     public StoreContext(
             InputView inputView,
             OutputView outputView,
-            ResourceFileLoader resourceFileLoader,
             ProductService productService,
             PromotionService promotionService,
             OrderService orderService,
@@ -36,7 +33,6 @@ public class StoreContext {
     ) {
         this.inputView = inputView;
         this.outputView = outputView;
-        this.resourceFileLoader = resourceFileLoader;
         this.productService = productService;
         this.promotionService = promotionService;
         this.orderService = orderService;
@@ -52,10 +48,6 @@ public class StoreContext {
 
     public OutputView getOutputView() {
         return outputView;
-    }
-
-    public ResourceFileLoader getResourceFileLoader() {
-        return resourceFileLoader;
     }
 
     public ProductService getProductService() {
