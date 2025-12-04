@@ -295,3 +295,72 @@ N
 - [x] 존재하지 않는 상품 입력 처리
 - [x] 재고 초과 입력 처리
 - [x] Y/N 외 입력 처리
+
+---
+
+## 프로젝트 구조
+
+```
+store/
+├── Application.java                 # 애플리케이션 진입점
+├── convert/                         # 입출력 변환 계층
+│   ├── mapper/                      # 도메인 -> 텍스트 변환
+│   │   ├── ProductTextMapper.java   # 상품 정보 출력 포맷
+│   │   └── ReceiptTextMapper.java   # 영수증 출력 포맷
+│   └── parser/                      # 텍스트 -> 도메인 변환
+│       ├── InputPurchaseParser.java # 구매 입력 파싱
+│       ├── ProductTextParser.java   # 상품 파일 파싱
+│       ├── PromotionTextParser.java # 프로모션 파일 파싱
+│       └── YesNoParser.java         # Y/N 입력 파싱
+├── domain/                          # 핵심 비즈니스 도메인
+│   ├── order/                       # 주문 도메인
+│   │   ├── Order.java               # 주문 항목
+│   │   └── PurchaseResult.java      # 구매 결과 (할인 계산)
+│   ├── payment/                     # 결제 도메인
+│   │   ├── Receipt.java             # 영수증 (할인 집계)
+│   │   └── ReceiptLine.java         # 영수증 항목
+│   └── product/                     # 상품 도메인
+│       ├── Product.java             # 상품 정보
+│       ├── Promotion.java           # 프로모션 정보
+│       ├── PromotionPolicy.java     # 프로모션 정책 (적용 로직)
+│       └── Stock.java               # 재고 관리
+├── service/                         # 서비스 계층
+│   ├── OrderService.java            # 주문 상태 관리
+│   ├── PaymentService.java          # 결제 처리
+│   ├── ProductService.java          # 상품 조회/판매
+│   └── PromotionService.java        # 프로모션 조회
+├── state/                           # 상태 패턴 (UI 흐름)
+│   ├── ShowProductsState.java       # 상품 목록 표시
+│   ├── InputPurchaseState.java      # 구매 입력
+│   ├── CheckoutState.java           # 프로모션/멤버십 확인
+│   ├── PaymentState.java            # 결제 및 영수증 출력
+│   ├── AskContinueState.java        # 추가 구매 여부
+│   └── StoreContext.java            # 상태 공유 컨텍스트
+├── support/                         # 프레임워크 (재사용 가능)
+│   ├── convert/                     # 변환 인터페이스
+│   ├── io/                          # 입출력 유틸리티
+│   ├── service/                     # 서비스 기반 클래스
+│   └── state/                       # 상태 패턴 프레임워크
+│       ├── annotation/              # @State, @Action 어노테이션
+│       └── runtime/                 # 상태 엔진
+└── validation/                      # 입력 검증
+    ├── InputPurchaseValidator.java  # 구매 입력 검증
+    └── YesNoValidator.java          # Y/N 입력 검증
+```
+
+## 설계 원칙
+
+### 도메인 중심 설계
+- 비즈니스 로직은 도메인 객체에 집중
+- 서비스는 도메인에 위임하는 얇은 계층
+
+### 상태 패턴
+- 어노테이션 기반 상태 패턴으로 UI 흐름 관리
+- `@State`: 상태 클래스 선언
+- `@Action`: 상태 내 실행 메서드 선언
+
+### 책임 분리
+- `PromotionPolicy`: 프로모션 적용 가능 수량, 무료 증정 수량 계산
+- `PurchaseResult`: 개별 구매 항목의 가격/할인 계산
+- `Receipt`: 전체 구매의 할인 집계 및 최종 금액 계산
+- `Stock`: 재고 차감 및 검증
