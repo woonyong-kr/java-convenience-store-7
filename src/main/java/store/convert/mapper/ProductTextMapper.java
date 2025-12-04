@@ -1,16 +1,15 @@
 package store.convert.mapper;
 
-import java.text.DecimalFormat;
 import store.domain.product.Product;
+import store.support.convert.Mapper;
 
-public class ProductTextMapper implements TextMapper<Product, String> {
+public class ProductTextMapper implements Mapper<Product> {
+
     private static final String PRICE_UNIT = "원";
     private static final String STOCK_UNIT = "개";
     private static final String OUT_OF_STOCK = "재고 없음";
     private static final String SPACE = " ";
     private static final String PREFIX = "- ";
-    private static final String LINE_BREAK = "\n";
-    private static final DecimalFormat PRICE_FORMAT = new DecimalFormat("#,###");
 
     @Override
     public String map(Product product) {
@@ -23,7 +22,7 @@ public class ProductTextMapper implements TextMapper<Product, String> {
                     product.getPromotionStock(),
                     product.getPromotion()
             ));
-            result.append(LINE_BREAK);
+            result.append(Mapper.LINE_DELIMITER);
         }
 
         result.append(formatLine(
@@ -41,7 +40,7 @@ public class ProductTextMapper implements TextMapper<Product, String> {
     }
 
     private String formatPrice(int price) {
-        return SPACE + PRICE_FORMAT.format(price) + PRICE_UNIT;
+        return SPACE + Mapper.number(price) + PRICE_UNIT;
     }
 
     private String formatStock(int stock) {

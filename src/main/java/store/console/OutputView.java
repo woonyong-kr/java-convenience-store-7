@@ -1,19 +1,17 @@
 package store.console;
 
-import store.convert.mapper.TextMapper;
+import store.support.convert.Mapper;
 
 public class OutputView {
 
-    public  OutputView(){
-
+    public OutputView() {
     }
 
     public void printLine(String message) {
         System.out.println(message);
     }
 
-
-    public <T> void printLine(T value, TextMapper<T, String> formatter) {
-        System.out.println(formatter.apply(value));
+    public <T> void printLine(T value, Mapper<T> mapper) {
+        System.out.println(mapper.map(value));
     }
 }

@@ -1,6 +1,9 @@
 package store.convert.parser;
 
-public class YesNoParser extends TextParser<Boolean> {
+import store.support.convert.Parser;
+
+public class YesNoParser implements Parser<Boolean> {
+
     private static final String YES = "Y";
 
     @Override

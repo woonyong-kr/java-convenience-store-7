@@ -5,10 +5,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import store.domain.product.Product;
+import store.support.convert.Parser;
 
-public class ProductTextParser extends TextParser<List<Product>> {
+public class ProductTextParser implements Parser<List<Product>> {
+
     private static final String DELIMITER = ",";
-    private static final String LINE_BREAK = "\n";
     private static final String NULL_TEXT = "null";
     private static final int EXPECTED_PARTS = 4;
 
@@ -16,7 +17,7 @@ public class ProductTextParser extends TextParser<List<Product>> {
     public List<Product> parse(String text) {
         Map<String, ProductLine> lineMap = new LinkedHashMap<>();
 
-        Arrays.stream(text.split(LINE_BREAK))
+        Arrays.stream(Parser.splitLines(text))
                 .skip(1)
                 .map(this::parseLineToDto)
                 .forEach(dto -> mergeLine(lineMap, dto));
@@ -27,13 +28,13 @@ public class ProductTextParser extends TextParser<List<Product>> {
     }
 
     private ProductLine parseLineToDto(String line) {
-        String[] parts = line.split(DELIMITER);
-        validateCollectionLength(parts, EXPECTED_PARTS);
-        validateNotEmpty(parts[0]);
+        String[] parts = Parser.split(line, DELIMITER);
+        Parser.validateLength(parts, EXPECTED_PARTS);
+        Parser.validateNotEmpty(parts[0]);
         return new ProductLine(
                 parts[0],
-                parseNumber(parts[1]),
-                parseNumber(parts[2]),
+                Parser.toInt(parts[1]),
+                Parser.toInt(parts[2]),
                 convertNullText(parts[3])
         );
     }
@@ -47,7 +48,7 @@ public class ProductTextParser extends TextParser<List<Product>> {
     }
 
     private String convertNullText(String value) {
-        validateNotEmpty(value);
+        Parser.validateNotEmpty(value);
         if (NULL_TEXT.equals(value)) {
             return null;
         }
@@ -55,6 +56,7 @@ public class ProductTextParser extends TextParser<List<Product>> {
     }
 
     private static class ProductLine {
+
         private final String name;
         private final int price;
         private int normalStock;

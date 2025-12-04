@@ -3,8 +3,10 @@ package store.convert.parser;
 import java.util.Arrays;
 import java.util.List;
 import store.domain.order.Order;
+import store.support.convert.Parser;
 
-public class InputPurchaseParser extends TextParser<List<Order>>  {
+public class InputPurchaseParser implements Parser<List<Order>> {
+
     private static final String ITEM_DELIMITER = ",";
     private static final String PART_DELIMITER = "-";
     private static final String BRACKET_PATTERN = "[\\[\\]]";
@@ -12,18 +14,18 @@ public class InputPurchaseParser extends TextParser<List<Order>>  {
 
     @Override
     public List<Order> parse(String text) {
-        return Arrays.stream(text.split(ITEM_DELIMITER))
+        return Arrays.stream(Parser.split(text, ITEM_DELIMITER))
                 .map(this::parseLine)
                 .toList();
     }
 
     private Order parseLine(String line) {
         String[] items = line.replaceAll(BRACKET_PATTERN, "").split(PART_DELIMITER);
-        validateCollectionLength(items, EXPECTED_PARTS);
-        validateNotEmpty(items[0]);
+        Parser.validateLength(items, EXPECTED_PARTS);
+        Parser.validateNotEmpty(items[0]);
         return new Order(
                 items[0],
-                parseNumber(items[1])
+                Parser.toInt(items[1])
         );
     }
 }

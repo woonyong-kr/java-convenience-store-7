@@ -1,13 +1,12 @@
 package store.console;
 
 import camp.nextstep.edu.missionutils.Console;
-import store.convert.parser.TextParser;
+import store.support.convert.Parser;
 import store.support.convert.Validator;
 
 public class InputView {
 
     public InputView() {
-
     }
 
     public String readLine() {
@@ -16,18 +15,18 @@ public class InputView {
 
     public String readLine(Validator<String> validator) {
         String input = readLine();
-        validator.accept(input);
+        validator.validate(input);
         return input;
     }
 
-    public <T> T readLine(TextParser<T> mapper) {
+    public <T> T readLine(Parser<T> parser) {
         String input = readLine();
-        return mapper.apply(input);
+        return parser.parse(input);
     }
 
-    public <T> T readLine(Validator<String> validator, TextParser<T> mapper) {
+    public <T> T readLine(Validator<String> validator, Parser<T> parser) {
         String input = readLine();
-        validator.accept(input);
-        return mapper.apply(input);
+        validator.validate(input);
+        return parser.parse(input);
     }
 }
