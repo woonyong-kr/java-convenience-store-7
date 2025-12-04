@@ -4,51 +4,34 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import store.service.OrderService;
-import store.service.PaymentService;
-import store.service.ProductService;
-import store.service.PromotionService;
 import store.support.io.Output;
+import store.support.service.Service;
 
 public class StoreContext {
+    private static final String ERROR_SERVICE_NOT_FOUND = "[ERROR] 등록되지 않은 서비스입니다: ";
 
-    private final ProductService productService;
-    private final PromotionService promotionService;
-    private final PaymentService paymentService;
-    private final OrderService orderService;
+    private final Map<Class<? extends Service>,  Service> services;
     private final Map<Class<? extends StoreState>, StoreState> storeState;
     private StoreState currentState;
 
     public StoreContext(
-            ProductService productService,
-            PromotionService promotionService,
-            OrderService orderService,
-            PaymentService paymentService,
-            StoreState... storeState
+            Service[] services,
+            StoreState ... storeState
     ) {
-        this.productService = productService;
-        this.promotionService = promotionService;
-        this.orderService = orderService;
-        this.paymentService = paymentService;
+        this.services = Arrays.stream(services)
+                .collect(Collectors.toMap(Service::getClass, service -> service));
         this.storeState = Arrays.stream(storeState)
                 .collect(Collectors.toMap(StoreState::getClass, state -> state));
         this.currentState = storeState[0];
     }
 
-    public ProductService getProductService() {
-        return productService;
-    }
-
-    public PromotionService getPromotionService() {
-        return promotionService;
-    }
-
-    public OrderService getOrderService() {
-        return orderService;
-    }
-
-    public PaymentService getPaymentService() {
-        return paymentService;
+    @SuppressWarnings("unchecked")
+    public <T extends Service> T getService(Class<T> type) {
+        Service service = services.get(type);
+        if (service == null) {
+            throw new IllegalArgumentException(ERROR_SERVICE_NOT_FOUND + type.getName());
+        }
+        return (T) service;
     }
 
     public void update() {

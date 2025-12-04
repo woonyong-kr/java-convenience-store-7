@@ -6,6 +6,10 @@ import store.domain.order.Order;
 import store.domain.payment.Receipt;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
+import store.service.OrderService;
+import store.service.PaymentService;
+import store.service.ProductService;
+import store.service.PromotionService;
 import store.support.io.Output;
 
 public class PaymentState implements StoreState {
@@ -18,18 +22,18 @@ public class PaymentState implements StoreState {
 
     @Override
     public Class<? extends StoreState> update(StoreContext context) {
-        List<Order> orders = context.getOrderService().getCurrentOrder();
-        List<Product> products = context.getProductService().getProducts();
-        List<Promotion> promotions = context.getPromotionService().getPromotions();
-        boolean useMembership = context.getOrderService().isUseMembership();
+        List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
+        List<Product> products = context.getService(ProductService.class).getProducts();
+        List<Promotion> promotions = context.getService(PromotionService.class).getPromotions();
+        boolean useMembership = context.getService(OrderService.class).isUseMembership();
 
-        Receipt receipt = context.getPaymentService().createReceipt(orders, products, promotions, useMembership);
+        Receipt receipt = context.getService(PaymentService.class).createReceipt(orders, products, promotions, useMembership);
         Output.printLine(receipt, receiptTextMapper);
 
         orders.forEach(order ->
-                context.getProductService().sellProduct(order.getName(), order.getQuantity()));
+                context.getService(ProductService.class).sellProduct(order.getName(), order.getQuantity()));
 
-        context.getOrderService().clearOrder();
+        context.getService(OrderService.class).clearOrder();
         return AskContinueState.class;
     }
 }

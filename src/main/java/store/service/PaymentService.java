@@ -6,8 +6,9 @@ import store.domain.payment.Receipt;
 import store.domain.payment.ReceiptLine;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
+import store.support.service.Service;
 
-public class PaymentService {
+public class PaymentService extends Service {
     private static final double MEMBERSHIP_DISCOUNT_RATE = 0.3;
     private static final int MEMBERSHIP_DISCOUNT_LIMIT = 8000;
 

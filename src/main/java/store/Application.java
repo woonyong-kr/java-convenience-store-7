@@ -11,6 +11,7 @@ import store.state.InputPurchaseState;
 import store.state.PaymentState;
 import store.state.ShowProductsState;
 import store.state.StoreContext;
+import store.support.service.Service;
 
 public class Application {
 
@@ -21,10 +22,12 @@ public class Application {
         PaymentService paymentService = new PaymentService();
 
         StoreContext storeContext = new StoreContext(
-                productService,
-                promotionService,
-                orderService,
-                paymentService,
+                new Service[]{
+                        productService,
+                        promotionService,
+                        orderService,
+                        paymentService
+                },
                 new ShowProductsState(),
                 new InputPurchaseState(),
                 new CheckoutState(),

@@ -6,8 +6,9 @@ import java.util.Optional;
 import store.convert.parser.PromotionTextParser;
 import store.domain.product.Promotion;
 import store.support.io.ResourceLoader;
+import store.support.service.Service;
 
-public class PromotionService {
+public class PromotionService extends Service {
 
     private static final String PROMOTIONS_FILE_PATH = "/promotions.md";
 

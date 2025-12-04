@@ -1,6 +1,7 @@
 package store.state;
 
 import store.convert.mapper.ProductTextMapper;
+import store.service.ProductService;
 import store.support.io.Output;
 
 public class ShowProductsState implements StoreState {
@@ -19,7 +20,7 @@ public class ShowProductsState implements StoreState {
         Output.printLine(PRODUCT_LIST_MESSAGE);
         Output.printLine();
 
-        context.getProductService().getProducts()
+        context.getService(ProductService.class).getProducts()
                 .forEach(product -> Output.printLine(product, productTextMapper));
         Output.printLine();
 

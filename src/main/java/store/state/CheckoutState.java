@@ -5,6 +5,9 @@ import store.convert.parser.YesNoParser;
 import store.domain.order.Order;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
+import store.service.OrderService;
+import store.service.ProductService;
+import store.service.PromotionService;
 import store.support.io.Input;
 import store.support.io.Output;
 import store.validation.YesNoValidator;
@@ -25,7 +28,7 @@ public class CheckoutState implements StoreState {
 
     @Override
     public Class<? extends StoreState> update(StoreContext context) {
-        List<Order> orders = context.getOrderService().getCurrentOrder();
+        List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
         orders.forEach(order -> checkPromotion(context, order));
 
         if (orders.stream().anyMatch(order -> order.getQuantity() != 0)) {
@@ -35,8 +38,8 @@ public class CheckoutState implements StoreState {
     }
 
     private void checkPromotion(StoreContext context, Order order) {
-        Product product = context.getProductService().findByName(order.getName());
-        Promotion promotion = context.getPromotionService()
+        Product product = context.getService(ProductService.class).findByName(order.getName());
+        Promotion promotion = context.getService(PromotionService.class)
                 .findByName(product.getPromotion()).orElse(null);
 
         askNonPromotionPurchase(context, order, product, promotion);
@@ -44,7 +47,7 @@ public class CheckoutState implements StoreState {
     }
 
     private void askNonPromotionPurchase(StoreContext context, Order order, Product product, Promotion promotion) {
-        int nonPromotionQuantity = context.getOrderService()
+        int nonPromotionQuantity = context.getService(OrderService.class)
                 .getNonPromotionQuantity(order, product, promotion);
 
         if (nonPromotionQuantity > 0) {
@@ -59,7 +62,7 @@ public class CheckoutState implements StoreState {
     }
 
     private void askFreeProduct(StoreContext context, Order order, Product product, Promotion promotion) {
-        int freeItemQuantity = context.getOrderService()
+        int freeItemQuantity = context.getService(OrderService.class)
                 .getFreeProductQuantity(order, product, promotion);
 
         if (freeItemQuantity > 0) {
@@ -77,6 +80,6 @@ public class CheckoutState implements StoreState {
         Output.printLine(ASK_MEMBERSHIP);
         boolean useMembership = context.retryUntilSuccess(() ->
                 Input.readLine(yesNoValidator, yesNoParser));
-        context.getOrderService().applyMembership(useMembership);
+        context.getService(OrderService.class).applyMembership(useMembership);
     }
 }

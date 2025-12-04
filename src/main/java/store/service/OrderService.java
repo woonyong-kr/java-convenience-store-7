@@ -5,8 +5,9 @@ import java.util.List;
 import store.domain.order.Order;
 import store.domain.product.Product;
 import store.domain.product.Promotion;
+import store.support.service.Service;
 
-public class OrderService {
+public class OrderService extends Service {
     private List<Order> currentOrder;
     private boolean useMembership;
 

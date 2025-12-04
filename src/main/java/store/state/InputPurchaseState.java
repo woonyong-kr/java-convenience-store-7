@@ -3,6 +3,8 @@ package store.state;
 import java.util.List;
 import store.convert.parser.InputPurchaseParser;
 import store.domain.order.Order;
+import store.service.OrderService;
+import store.service.ProductService;
 import store.support.io.Input;
 import store.support.io.Output;
 import store.validation.InputPurchaseValidator;
@@ -26,11 +28,11 @@ public class InputPurchaseState implements StoreState {
         List<Order> orders = context.retryUntilSuccess(() -> {
             List<Order> items = Input.readLine(inputPurchaseValidator, inputPurchaseParser);
             items.forEach(item ->
-                    context.getProductService().checkOrder(item.getName(), item.getQuantity()));
+                    context.getService(ProductService.class).checkOrder(item.getName(), item.getQuantity()));
             return items;
         });
 
-        context.getOrderService().registerOrder(orders);
+        context.getService(OrderService.class).registerOrder(orders);
         return CheckoutState.class;
     }
 }

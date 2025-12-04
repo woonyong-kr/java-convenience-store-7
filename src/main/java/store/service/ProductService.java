@@ -5,8 +5,9 @@ import java.util.List;
 import store.convert.parser.ProductTextParser;
 import store.domain.product.Product;
 import store.support.io.ResourceLoader;
+import store.support.service.Service;
 
-public class ProductService {
+public class ProductService extends Service {
 
     private static final String PRODUCTS_FILE_PATH = "/products.md";
     private static final String ERROR_PRODUCT_NOT_FOUND = "[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요.";
