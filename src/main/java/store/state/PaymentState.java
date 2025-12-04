@@ -11,8 +11,11 @@ import store.service.PaymentService;
 import store.service.ProductService;
 import store.service.PromotionService;
 import store.support.io.Output;
+import store.support.state.annotation.Action;
+import store.support.state.annotation.State;
 
-public class PaymentState implements StoreState {
+@State
+public class PaymentState {
 
     private final ReceiptTextMapper receiptTextMapper;
 
@@ -20,8 +23,8 @@ public class PaymentState implements StoreState {
         this.receiptTextMapper = new ReceiptTextMapper();
     }
 
-    @Override
-    public Class<? extends StoreState> update(StoreContext context) {
+    @Action
+    public void processPayment(StoreContext context) {
         List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
         List<Product> products = context.getService(ProductService.class).getProducts();
         List<Promotion> promotions = context.getService(PromotionService.class).getPromotions();
@@ -34,6 +37,6 @@ public class PaymentState implements StoreState {
                 context.getService(ProductService.class).sellProduct(order.getName(), order.getQuantity()));
 
         context.getService(OrderService.class).clearOrder();
-        return AskContinueState.class;
+        context.transitionTo(AskContinueState.class);
     }
 }

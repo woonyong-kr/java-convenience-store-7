@@ -6,23 +6,18 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import store.support.io.Output;
 import store.support.service.Service;
+import store.support.state.runtime.StateContext;
 
-public class StoreContext {
+public class StoreContext implements StateContext {
     private static final String ERROR_SERVICE_NOT_FOUND = "[ERROR] 등록되지 않은 서비스입니다: ";
 
-    private final Map<Class<? extends Service>,  Service> services;
-    private final Map<Class<? extends StoreState>, StoreState> storeState;
-    private StoreState currentState;
+    private final Map<Class<? extends Service>, Service> services;
+    private Class<?> pendingTransition;
+    private boolean finished;
 
-    public StoreContext(
-            Service[] services,
-            StoreState ... storeState
-    ) {
+    public StoreContext(Service ... services) {
         this.services = Arrays.stream(services)
                 .collect(Collectors.toMap(Service::getClass, service -> service));
-        this.storeState = Arrays.stream(storeState)
-                .collect(Collectors.toMap(StoreState::getClass, state -> state));
-        this.currentState = storeState[0];
     }
 
     @SuppressWarnings("unchecked")
@@ -34,8 +29,31 @@ public class StoreContext {
         return (T) service;
     }
 
-    public void update() {
-        currentState = storeState.get(currentState.update(this));
+    @Override
+    public void transitionTo(Class<?> nextState) {
+        this.pendingTransition = nextState;
+    }
+
+    @Override
+    public void finish() {
+        this.finished = true;
+    }
+
+    @Override
+    public boolean hasPendingTransition() {
+        return pendingTransition != null;
+    }
+
+    @Override
+    public Class<?> consumePendingTransition() {
+        Class<?> next = pendingTransition;
+        pendingTransition = null;
+        return next;
+    }
+
+    @Override
+    public boolean isFinished() {
+        return finished;
     }
 
     public <T> T retryUntilSuccess(Supplier<T> task) {
@@ -46,9 +64,5 @@ public class StoreContext {
                 Output.printLine(e.getMessage());
             }
         }
-    }
-
-    public boolean isFinished() {
-        return currentState == null;
     }
 }

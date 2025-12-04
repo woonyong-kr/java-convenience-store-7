@@ -13,7 +13,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import store.support.state.annotation.ContextConfiguration;
-import store.support.state.annotation.InitialState;
 import store.support.state.annotation.State;
 
 public class StateScanner {
@@ -158,7 +157,7 @@ public class StateScanner {
     public static Class<?> findInitialState(String basePackage) {
         List<Class<?>> stateClasses = scanStateClasses(basePackage);
         return stateClasses.stream()
-                .filter(clazz -> clazz.isAnnotationPresent(InitialState.class))
+                .filter(clazz -> clazz.getAnnotation(State.class).initial())
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException(ERROR_NO_INITIAL_STATE + basePackage));
     }

@@ -8,9 +8,11 @@ import store.service.ProductService;
 import store.support.io.Input;
 import store.support.io.Output;
 import store.validation.InputPurchaseValidator;
+import store.support.state.annotation.Action;
+import store.support.state.annotation.State;
 
-public class InputPurchaseState implements StoreState {
-
+@State
+public class InputPurchaseState {
     private static final String INPUT_PURCHASE_MESSAGE = "구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])";
 
     private final InputPurchaseValidator inputPurchaseValidator;
@@ -21,8 +23,8 @@ public class InputPurchaseState implements StoreState {
         this.inputPurchaseParser = new InputPurchaseParser();
     }
 
-    @Override
-    public Class<? extends StoreState> update(StoreContext context) {
+    @Action
+    public void inputPurchase(StoreContext context) {
         Output.printLine(INPUT_PURCHASE_MESSAGE);
 
         List<Order> orders = context.retryUntilSuccess(() -> {
@@ -33,6 +35,6 @@ public class InputPurchaseState implements StoreState {
         });
 
         context.getService(OrderService.class).registerOrder(orders);
-        return CheckoutState.class;
+        context.transitionTo(CheckoutState.class);
     }
 }

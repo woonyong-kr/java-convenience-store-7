@@ -3,9 +3,12 @@ package store.state;
 import store.convert.parser.YesNoParser;
 import store.support.io.Input;
 import store.support.io.Output;
+import store.support.state.annotation.Action;
+import store.support.state.annotation.State;
 import store.validation.YesNoValidator;
 
-public class AskContinueState implements StoreState {
+@State
+public class AskContinueState {
 
     private static final String ASK_CONTINUE_MESSAGE = "감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)";
 
@@ -17,16 +20,17 @@ public class AskContinueState implements StoreState {
         this.yesNoParser = new YesNoParser();
     }
 
-    @Override
-    public Class<? extends StoreState> update(StoreContext context) {
+    @Action
+    public void askContinue(StoreContext context) {
         Output.printLine(ASK_CONTINUE_MESSAGE);
 
         boolean continues = context.retryUntilSuccess(() ->
                 Input.readLine(yesNoValidator, yesNoParser));
 
         if (continues) {
-            return ShowProductsState.class;
+            context.transitionTo(ShowProductsState.class);
+            return;
         }
-        return null;
+        context.finish();
     }
 }

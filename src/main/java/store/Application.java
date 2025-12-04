@@ -1,17 +1,11 @@
 package store;
 
-import store.controller.StoreController;
 import store.service.OrderService;
 import store.service.PaymentService;
 import store.service.ProductService;
 import store.service.PromotionService;
-import store.state.AskContinueState;
-import store.state.CheckoutState;
-import store.state.InputPurchaseState;
-import store.state.PaymentState;
-import store.state.ShowProductsState;
 import store.state.StoreContext;
-import store.support.service.Service;
+import store.support.state.runtime.StateRunner;
 
 public class Application {
 
@@ -22,20 +16,12 @@ public class Application {
         PaymentService paymentService = new PaymentService();
 
         StoreContext storeContext = new StoreContext(
-                new Service[]{
-                        productService,
-                        promotionService,
-                        orderService,
-                        paymentService
-                },
-                new ShowProductsState(),
-                new InputPurchaseState(),
-                new CheckoutState(),
-                new PaymentState(),
-                new AskContinueState()
+                productService,
+                promotionService,
+                orderService,
+                paymentService
         );
 
-        StoreController controller = new StoreController(storeContext);
-        controller.run();
+        StateRunner.run("store.state", storeContext);
     }
 }

@@ -10,9 +10,12 @@ import store.service.ProductService;
 import store.service.PromotionService;
 import store.support.io.Input;
 import store.support.io.Output;
+import store.support.state.annotation.Action;
+import store.support.state.annotation.State;
 import store.validation.YesNoValidator;
 
-public class CheckoutState implements StoreState {
+@State
+public class CheckoutState {
 
     private static final String PROMOTION_NOT_APPLICABLE = "현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)";
     private static final String FREE_ITEM_AVAILABLE = "현재 %s은(는) %d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)";
@@ -26,15 +29,26 @@ public class CheckoutState implements StoreState {
         this.yesNoParser = new YesNoParser();
     }
 
-    @Override
-    public Class<? extends StoreState> update(StoreContext context) {
+    @Action(order = 1)
+    public void checkPromotions(StoreContext context) {
         List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
         orders.forEach(order -> checkPromotion(context, order));
+    }
 
+    @Action(order = 2)
+    public void askMembership(StoreContext context) {
+        List<Order> orders = context.getService(OrderService.class).getCurrentOrder();
         if (orders.stream().anyMatch(order -> order.getQuantity() != 0)) {
-            askUseMembership(context);
+            Output.printLine(ASK_MEMBERSHIP);
+            boolean useMembership = context.retryUntilSuccess(() ->
+                    Input.readLine(yesNoValidator, yesNoParser));
+            context.getService(OrderService.class).applyMembership(useMembership);
         }
-        return PaymentState.class;
+    }
+
+    @Action(order = 3)
+    public void goToPayment(StoreContext context) {
+        context.transitionTo(PaymentState.class);
     }
 
     private void checkPromotion(StoreContext context, Order order) {
@@ -74,12 +88,5 @@ public class CheckoutState implements StoreState {
                 order.addQuantity(freeItemQuantity);
             }
         }
-    }
-
-    private void askUseMembership(StoreContext context) {
-        Output.printLine(ASK_MEMBERSHIP);
-        boolean useMembership = context.retryUntilSuccess(() ->
-                Input.readLine(yesNoValidator, yesNoParser));
-        context.getService(OrderService.class).applyMembership(useMembership);
     }
 }

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 import store.support.state.annotation.Action;
-import store.support.state.annotation.Order;
 
 public class StateEngine {
 
@@ -100,11 +99,8 @@ public class StateEngine {
     }
 
     private int getOrderValue(Method method) {
-        Order order = method.getAnnotation(Order.class);
-        if (order == null) {
-            return Integer.MAX_VALUE;
-        }
-        return order.value();
+        Action action = method.getAnnotation(Action.class);
+        return action.order();
     }
 
     private void validateInitialState(Class<?> initialStateClass) {
